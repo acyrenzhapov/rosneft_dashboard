@@ -5,7 +5,11 @@ Note that dcc.Store is in the app.py file so that it's accessible to all pages.
 
 
 from dash import html, dcc
+import dash_bootstrap_components as dbc
 import dash
+from dash_slicer import VolumeSlicer
+import numpy as np
+from src.read_segy import get_full_data
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
@@ -15,16 +19,28 @@ app = dash.Dash(
     external_stylesheets=external_stylesheets,
 )
 
+cube = get_full_data('..\\data\\F3_Dip.sgy').T
+spacing = 1, 1, 1
+
+slicer0 = VolumeSlicer(app, cube, spacing=spacing, axis=2, thumbnail=False)
+slicer1 = VolumeSlicer(app, cube, spacing=spacing, axis=1)
+
+slicer0.graph.config["scrollZoom"] = False
+slicer1.graph.config["scrollZoom"] = False
+
 app.layout = html.Div(
     [
         html.H1("Multi Page App Demo: Sharing data between pages"),
-        html.Div(
+        dbc.Nav(
             [
-                html.Div(
-                    dcc.Link(f"{page['name']}", href=page["path"]),
+                dbc.NavLink(
+                    html.Div(page["name"], className="ms-2"),
+                    href=page["path"],
+                    active="exact",
                 )
                 for page in dash.page_registry.values()
-            ]
+            ],
+            pills=True,
         ),
         html.Div(
             [
@@ -41,6 +57,8 @@ app.layout = html.Div(
             },
         ),
         dash.page_container,
+        html.Div([slicer0.graph, html.Br(), slicer0.slider, *slicer0.stores]),
+        html.Div([slicer1.graph, html.Br(), slicer1.slider, *slicer1.stores]),
     ]
 )
 

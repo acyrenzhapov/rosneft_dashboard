@@ -18,7 +18,8 @@ def get_segy_header(filepath: typing.Union[str, pathlib.Path]) -> dict:
     with segyio.open(filepath) as segyfile:
         raw_header = segyio.tools.wrap(segyfile.text[0])
         cut_header = re.split(r"C[0-9 ]+", raw_header)[1::]
-        text_header = [re.sub(" +", " ", x.replace("\n", " ")) for x in cut_header]
+        text_header = [re.sub(" +", " ", x.replace("\n", " ")) for x in
+                       cut_header]
         clean_header = {}
         for index, item in enumerate(text_header):
             key = "C" + str(index + 1).rjust(2, "0")
@@ -43,7 +44,9 @@ def get_trace_id_list(segyfile: segyio.SegyFile, trace_id: int) -> list:
     return trace_id_list
 
 
-def get_trace_header(filepath: typing.Union[str, pathlib.Path], trace_id: int = 1) -> None:
+def get_trace_header(
+    filepath: typing.Union[str, pathlib.Path], trace_id: int = 1
+    ) -> None:
     """Get header of trace
 
     Args:
@@ -61,7 +64,9 @@ def get_trace_header(filepath: typing.Union[str, pathlib.Path], trace_id: int = 
             pass
 
 
-def get_standart_view(filepath: typing.Union[str, pathlib.Path], xline_id: int = 1) -> np.ndarray:
+def get_standart_view(
+    filepath: typing.Union[str, pathlib.Path], xline_id: int = 1
+    ) -> np.ndarray:
     """Get slice of segy cube by iline
 
     Args:
@@ -78,10 +83,13 @@ def get_standart_view(filepath: typing.Union[str, pathlib.Path], xline_id: int =
         xlines_count = len(segyfile.xlines)
         if xlines_count < xline_id:
             raise IndexError("Wrong index")
-        return segyfile.trace.raw[xlines_count * xline_id : xlines_count * (xline_id + 1)]
+        return segyfile.trace.raw[
+               xlines_count * xline_id: xlines_count * (xline_id + 1)]
 
 
-def get_side_view(filepath: typing.Union[str, pathlib.Path], iline_id: int = 0) -> np.ndarray:
+def get_side_view(
+    filepath: typing.Union[str, pathlib.Path], iline_id: int = 0
+    ) -> np.ndarray:
     """Get slice of segy cube by xline
 
     Args:
@@ -121,7 +129,8 @@ def check_file_is_readable(filepath: typing.Union[str, pathlib.Path]) -> bool:
         return False
 
 
-def get_min_max_value(filepath: typing.Union[str, pathlib.Path]) -> typing.Tuple[float, float]:
+def get_min_max_value(filepath: typing.Union[str, pathlib.Path]) -> \
+typing.Tuple[float, float]:
     """Return min max value of amplitude of segy file
     Can be very long for a big file
     Approximately 80 sec for 9GB file
@@ -145,7 +154,9 @@ def get_min_max_value(filepath: typing.Union[str, pathlib.Path]) -> typing.Tuple
     return (min_value, max_value)
 
 
-def get_segy_cube_shape(filepath: typing.Union[str, pathlib.Path]) -> typing.Tuple[int, int, int]:
+def get_segy_cube_shape(
+    filepath: typing.Union[str, pathlib.Path]
+) -> typing.Tuple[int, int, int]:
     """Return seg-y cube shape
 
     Args:
@@ -158,4 +169,20 @@ def get_segy_cube_shape(filepath: typing.Union[str, pathlib.Path]) -> typing.Tup
         xlines = len(segyfile.xlines)
         ilines = len(segyfile.ilines)
         time_value = segyfile.trace.shape
-    return (xlines, ilines, time_value)
+    return xlines, ilines, time_value
+
+
+def get_full_data(
+    filepath: typing.Union[str, pathlib.Path]
+) -> np.ndarray:
+    """
+    Read full cube.
+    Can be danger due to high memory consumption
+    Args:
+        filepath: path to SEG-Y file
+
+    Returns: full cube data
+    """
+    with segyio.open(filepath) as segyfile:
+        data = segyio.tools.cube(segyfile)
+    return data

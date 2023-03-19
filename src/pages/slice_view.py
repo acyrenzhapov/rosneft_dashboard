@@ -4,7 +4,10 @@ from dash import Input, Output, State, callback, dcc, html, register_page
 
 from src.read_segy import get_segy_cube_shape
 
-register_page(__name__)
+register_page(
+    __name__,
+    top_nav=True,
+)
 
 segy_path = '../data/F3_Dip.sgy'
 
