@@ -13,6 +13,9 @@ dash = "^2.8.1"
 segyio = "^1.9.10"
 dash-bootstrap-components = "^1.4.0"
 wemake-python-styleguide = "^0.17.0"
+dash-slicer = "^0.3.0"
+dash-labs = "^1.2.0"
+tensorboard = "^2.12.0"
 
 
 [build-system]
