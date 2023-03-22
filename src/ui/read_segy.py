@@ -6,8 +6,10 @@ import numpy as np
 import segyio
 
 
-def get_segy_header(filepath: typing.Union[str, pathlib.Path]) -> dict:
-    """Return dictionary header of segy file
+def get_segy_header(
+    filepath: typing.Union[str, pathlib.Path],
+) -> dict:
+    """Return dictionary header of segy file.
 
     Args:
         filepath (typing.Union[str, pathlib.Path]): path to segy file
@@ -17,18 +19,21 @@ def get_segy_header(filepath: typing.Union[str, pathlib.Path]) -> dict:
     """
     with segyio.open(filepath) as segyfile:
         raw_header = segyio.tools.wrap(segyfile.text[0])
-        cut_header = re.split(r"C[0-9 ]+", raw_header)[1::]
-        text_header = [re.sub(" +", " ", x.replace("\n", " ")) for x in
+        cut_header = re.split(r'C[0-9 ]+', raw_header)[1::]
+        text_header = [re.sub(' +', ' ', x.replace('\n', ' ')) for x in
                        cut_header]
         clean_header = {}
         for index, item in enumerate(text_header):
-            key = "C" + str(index + 1).rjust(2, "0")
+            key = 'C' + str(index + 1).rjust(2, '0')
             clean_header[key] = item
         return clean_header
 
 
-def get_trace_id_list(segyfile: segyio.SegyFile, trace_id: int) -> list:
-    """Get trace ids in segyfile
+def get_trace_id_list(
+    segyfile: segyio.SegyFile,
+    trace_id: int,
+) -> list:
+    """Get trace ids in segyfile.
 
     Args:
         segyfile (segyio.SegyFile): opened segyfile
@@ -45,9 +50,10 @@ def get_trace_id_list(segyfile: segyio.SegyFile, trace_id: int) -> list:
 
 
 def get_trace_header(
-    filepath: typing.Union[str, pathlib.Path], trace_id: int = 1
-    ) -> None:
-    """Get header of trace
+    filepath: typing.Union[str, pathlib.Path],
+    trace_id: int = 1,
+) -> None:
+    """Get header of trace.
 
     Args:
         filepath (typing.Union[str, pathlib.Path]): filepath to segy file
@@ -65,9 +71,10 @@ def get_trace_header(
 
 
 def get_standart_view(
-    filepath: typing.Union[str, pathlib.Path], xline_id: int = 1
-    ) -> np.ndarray:
-    """Get slice of segy cube by iline
+    filepath: typing.Union[str, pathlib.Path],
+    xline_id: int = 1,
+) -> np.ndarray:
+    """Get slice of segy cube by iline.
 
     Args:
         filepath (typing.Union[str, pathlib.Path]): filepath to segy file
@@ -80,21 +87,23 @@ def get_standart_view(
         np.ndarray: get slice by freezing iline
     """
     with segyio.open(filepath) as segyfile:
-        xlines_count = len(segyfile.xlines)
-        if xlines_count < xline_id:
-            raise IndexError("Wrong index")
+        ilines_count = len(segyfile.ilines)
+        if ilines_count < xline_id:
+            raise IndexError('Wrong index')
         return segyfile.trace.raw[
-               xlines_count * xline_id: xlines_count * (xline_id + 1)]
+            ilines_count * xline_id: ilines_count * (xline_id + 1)
+        ]
 
 
 def get_side_view(
-    filepath: typing.Union[str, pathlib.Path], iline_id: int = 0
-    ) -> np.ndarray:
-    """Get slice of segy cube by xline
+    filepath: typing.Union[str, pathlib.Path],
+    iline_id: int = 0,
+) -> np.ndarray:
+    """Get slice of segy cube by xline.
 
     Args:
         filepath (typing.Union[str, pathlib.Path]): filepath to segy file
-        iline_id (int, optional): iline_id which need to get. Defaults to 1.
+        iline_id (int): slice_id which need to get. Defaults to 1.
 
     Returns:
         np.ndarray: get slice by freezing xline
@@ -102,12 +111,14 @@ def get_side_view(
     with segyio.open(filepath) as segyfile:
         xlines_count = len(segyfile.xlines)
         if xlines_count < iline_id:
-            raise IndexError("Wrong index")
+            raise IndexError('Wrong index')
         return segyfile.trace.raw[iline_id::xlines_count]
 
 
-def check_file_is_readable(filepath: typing.Union[str, pathlib.Path]) -> bool:
-    """Check if it necessary to use ignore_index when call segyio.open
+def check_file_is_readable(
+    filepath: typing.Union[str, pathlib.Path],
+) -> bool:
+    """Check if it necessary to use ignore_index when call segyio.open.
 
     Args:
         filepath (typing.Union[str, pathlib.Path]): filepath to segy file
@@ -120,8 +131,8 @@ def check_file_is_readable(filepath: typing.Union[str, pathlib.Path]) -> bool:
         return False
 
     try:
-        with segyio.open(filepath) as segyfile:
-            pass
+        with segyio.open(filepath) as segyfile:  # noqa: F841 WPS328
+            pass  # noqa: WPS420
         return True
     except RuntimeError:
         return False
@@ -129,9 +140,11 @@ def check_file_is_readable(filepath: typing.Union[str, pathlib.Path]) -> bool:
         return False
 
 
-def get_min_max_value(filepath: typing.Union[str, pathlib.Path]) -> \
-typing.Tuple[float, float]:
-    """Return min max value of amplitude of segy file
+def get_min_max_value(  # noqa: WPS210
+    filepath: typing.Union[str, pathlib.Path],
+) -> typing.Tuple[float, float]:
+    """Return min max value of amplitude of segy file.
+
     Can be very long for a big file
     Approximately 80 sec for 9GB file
 
@@ -155,9 +168,9 @@ typing.Tuple[float, float]:
 
 
 def get_segy_cube_shape(
-    filepath: typing.Union[str, pathlib.Path]
+    filepath: typing.Union[str, pathlib.Path],
 ) -> typing.Tuple[int, int, int]:
-    """Return seg-y cube shape
+    """Return seg-y cube shape.
 
     Args:
         filepath (typing.Union[str, pathlib.Path]): Path to seg-y file
@@ -173,16 +186,17 @@ def get_segy_cube_shape(
 
 
 def get_full_data(
-    filepath: typing.Union[str, pathlib.Path]
+    filepath: typing.Union[str, pathlib.Path],
 ) -> np.ndarray:
     """
     Read full cube.
+
     Can be danger due to high memory consumption
     Args:
         filepath: path to SEG-Y file
 
-    Returns: full cube data
+    Returns: full cube data_store
     """
     with segyio.open(filepath) as segyfile:
-        data = segyio.tools.cube(segyfile)
-    return data
+        full_cube = segyio.tools.cube(segyfile)
+    return full_cube
