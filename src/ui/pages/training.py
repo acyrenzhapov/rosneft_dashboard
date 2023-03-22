@@ -16,18 +16,40 @@ controls = [
                     'Уже существующая',
                     'Новая',
                 ],
-                id='model-dropdown',
+                value='Новая',
+                id='model-type-dropdown',
             ),
         ],
     ),
     dbc.Form(
         [
+            dbc.Label(
+                'Путь к весам модели',
+                className='mt-1',
+            ),
+            dcc.Input(
+                id='model-type-dropdown',
+                style={
+                    'width': '100%',
+                },
+            ),
+        ],
+        id='model-weights-path',
+    ),
+    dbc.Form(
+        [
             html.Div(
                 [
-                    dbc.Label('Learning rate'),
+                    dbc.Label(
+                        'Learning rate',
+                        className='mt-1',
+                    ),
                     html.I(
                         className='fas fa-question-circle',
                         id='learning-rate-tip',
+                        style={
+                            'margin-left': '5px',
+                        },
                     ),
                     dbc.Tooltip(
                         'Коэффициент скорости обучения — это параметр ' +
@@ -50,7 +72,10 @@ controls = [
     ),
     dbc.Form(
         [
-            dbc.Label('Количество эпох'),
+            dbc.Label(
+                'Количество эпох',
+                className='mt-1',
+            ),
             dbc.Input(
                 id='epoch-value',
                 type='number',
@@ -63,10 +88,16 @@ controls = [
         [
             html.Div(
                 [
-                    dbc.Label('Batch size'),
+                    dbc.Label(
+                        'Batch size',
+                        className='mt-1',
+                    ),
                     html.I(
-                        className='fas fa-question-circle',
+                        className='fas fa-question-circle ml-1',
                         id='batch-size-tip',
+                        style={
+                            'margin-left': '5px',
+                        },
                     ),
                     dbc.Tooltip(
                         'Объем данных (количество строк/картинок), ' +
@@ -82,6 +113,42 @@ controls = [
                 type='number',
                 step=1,
                 value=Settings.BASE_BATCH_SIZE,
+            ),
+        ],
+    ),
+    dbc.Form(
+        [
+            html.Div(
+                [
+                    dbc.Label(
+                        'Вид девайса',
+                        className='mt-1',
+                    ),
+                    html.I(
+                        className='fas fa-question-circle ml-1',
+                        id='device-type-tip',
+                        style={
+                            'margin-left': '5px',
+                        },
+                    ),
+                    dbc.Tooltip(
+                        'На каком устройстве будет обучаться модель, ' +
+                        'в случае видеокарты, требуется Nvidia любого ' +
+                        'поколения. Видеокарта в десятки раз быстрее ' +
+                        'проводит обучение.',
+                        target='device-type-tip',
+                        className='pl-5',
+                    ),
+                ],
+                className='text-muted',
+            ),
+            dcc.Dropdown(
+                [
+                    'Процессор',
+                    'Видеокарта',
+                ],
+                value='xline',
+                id='device-type-value',
             ),
         ],
     ),

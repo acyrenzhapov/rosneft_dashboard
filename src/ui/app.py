@@ -13,7 +13,7 @@ app = dash.Dash(
     external_stylesheets=[
         dbc.themes.BOOTSTRAP,
         FONT_AWESOME,
-    ]
+    ],
 )
 
 navbar = dbc.NavbarSimple(
@@ -34,7 +34,7 @@ store = dcc.Store(
     data={
         'segy_path': '../data/F3_Dip.sgy',
     },
-),
+)
 
 app.layout = dbc.Container(
     [
