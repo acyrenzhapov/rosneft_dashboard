@@ -2,19 +2,21 @@ from typing import Optional
 
 from dash import Input, Output, State, callback
 from dash.development.base_component import Component
+from dash.exceptions import PreventUpdate
 from plotly.express import imshow
 
-from src.ui.read_segy import get_segy_cube_shape
+from src.network.read_segy import get_segy_cube_shape
 from src.ui.utils import get_segy_path, get_slice, get_slider_marks
+from src.ui.app import app
 
 
-@callback(
+@app.callback(
     Output('div-example-graph', 'figure'),
     Input('slice-slider', 'value'),
     Input('perpendicular-way', 'value'),
     Input('store', 'data'),
 )
-def _get_slice_view(
+def get_slice_view(
     slice_id: int = 1,
     side_view: str = 'inline',
     data_store: Optional[dict] = None,
@@ -35,7 +37,7 @@ def _get_slice_view(
     return fig
 
 
-@callback(
+@app.callback(
     Output('slice-slider', 'max'),
     Input('segy-path-submit-button', 'n_clicks'),
     Input('perpendicular-way', 'value'),
@@ -56,7 +58,7 @@ def update_slider_inline_max(
     return new_xline_max
 
 
-@callback(
+@app.callback(
     Output('slice-slider', 'marks'),
     Input('segy-path-submit-button', 'n_clicks'),
     Input('store', 'data'),
@@ -77,7 +79,17 @@ def update_slider_marks(
     return get_slider_marks(new_xline_max)
 
 
-@callback(
+@app.callback(
+    Output('segy-path-input', 'value'),
+    Input('store', 'data'),
+)
+def update_segy_input(
+    data_store: Optional[dict] = None,
+):
+    return data_store.get('segy_path')
+
+
+@app.callback(
     Output('store', 'data'),
     Input('segy-path-submit-button', 'n_clicks'),
     State('segy-path-input', 'value'),
@@ -87,4 +99,6 @@ def save_segy_path(
     _segy_path: str,
 ):
     """Update store."""
+    if not n_clicks:
+        raise PreventUpdate()
     return {'segy_path': _segy_path}

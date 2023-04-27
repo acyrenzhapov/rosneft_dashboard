@@ -57,7 +57,8 @@ def get_trace_header(
 
     Args:
         filepath (typing.Union[str, pathlib.Path]): filepath to segy file
-        trace_id (int, optional): id of trace which header need to get. Defaults to 1.
+        trace_id (int, optional): id of trace which header need to get.
+        Defaults to 1.
 
     TODO: Is it really need to do? How should the format look like?
     """
@@ -87,11 +88,11 @@ def get_standart_view(
         np.ndarray: get slice by freezing iline
     """
     with segyio.open(filepath) as segyfile:
-        ilines_count = len(segyfile.ilines)
-        if ilines_count < xline_id:
+        xline_count = len(segyfile.xlines)
+        if xline_count < xline_id:
             raise IndexError('Wrong index')
         return segyfile.trace.raw[
-            ilines_count * xline_id: ilines_count * (xline_id + 1)
+           xline_count * xline_id: xline_count * (xline_id + 1)
         ]
 
 
@@ -200,3 +201,40 @@ def get_full_data(
     with segyio.open(filepath) as segyfile:
         full_cube = segyio.tools.cube(segyfile)
     return full_cube
+
+
+def check_out_of_bounds(
+    filepath: typing.Union[str, pathlib.Path],
+    xline_id: int = 0,
+    iline_id: int = 0,
+    timeline_id: int = 0,
+    size: int = 64,
+) -> bool:
+    xlines, ilines, time_value = get_segy_cube_shape(filepath)
+    if xline_id + size > xlines:
+        return True
+    if iline_id + size > ilines:
+        return True
+    if timeline_id + size > time_value:
+        return True
+    return False
+
+
+def get_3d_slice(
+    filepath: typing.Union[str, pathlib.Path],
+    xline_id: int = 0,
+    iline_id: int = 0,
+    timeline_id: int = 0,
+    size: int = 64,
+) -> np.ndarray:
+    if check_out_of_bounds(filepath, xline_id, iline_id, timeline_id, size):
+        return np.zeros((64, 64, 64))
+    inlines = []
+    with segyio.open(filepath, "r") as segyfile:
+        segyfile.mmap()
+        for inline in segyfile.ilines[iline_id: iline_id + size]:
+            inlines.append(segyfile.iline[inline][
+                xline_id: xline_id + size,
+                timeline_id: timeline_id + size,
+            ])
+    return np.array(inlines)

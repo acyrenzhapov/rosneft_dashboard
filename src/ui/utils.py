@@ -2,7 +2,7 @@ from typing import Optional
 
 from plotly import express as px
 
-from src.ui.read_segy import get_side_view, get_standart_view
+from src.network.read_segy import get_side_view, get_standart_view
 
 
 def get_segy_path(
@@ -42,3 +42,4 @@ def get_slider_marks(max_value: int):
         (3 * max_value // 4): str(3 * max_value // 4),
         max_value: str(max_value),
     }
+

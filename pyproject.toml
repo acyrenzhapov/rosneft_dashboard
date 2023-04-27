@@ -16,6 +16,14 @@ wemake-python-styleguide = "^0.17.0"
 dash-slicer = "^0.3.0"
 dash-labs = "^1.2.0"
 tensorboard = "^2.12.0"
+torch = "^2.0.0"
+torchvision = "^0.15.1"
+torchaudio = "^2.0.1"
+tiledb-segy = "^0.3.1"
+pytorch-lightning = "^2.0.1"
+segmentation-models-pytorch = "^0.3.2"
+dash-mantine-components = "^0.12.0"
+notebook = "^6.5.4"
 
 
 [build-system]

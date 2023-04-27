@@ -2,10 +2,9 @@ import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dash_labs.plugins import register_page
 
-import src.ui.callbacks.training  # noqa: WPS301 F401
 from src.settings import Settings
 
-register_page(__name__)
+# register_page(__name__)
 
 controls = [
     dbc.Form(
@@ -27,8 +26,8 @@ controls = [
                 'Путь к весам модели',
                 className='mt-1',
             ),
-            dcc.Input(
-                id='model-type-dropdown',
+            dbc.Input(
+                id='model-type-input',
                 style={
                     'width': '100%',
                 },
@@ -63,7 +62,7 @@ controls = [
                 className='text-muted',
             ),
             dbc.Input(
-                id='learning-rate-value',
+                id='learning-rate',
                 type='number',
                 step=Settings.LEARNING_RATE_STEP,
                 value=Settings.BASE_LEARNING_RATE,
@@ -77,7 +76,7 @@ controls = [
                 className='mt-1',
             ),
             dbc.Input(
-                id='epoch-value',
+                id='epoch-cube_size',
                 type='number',
                 step=1,
                 value=10,
@@ -89,12 +88,12 @@ controls = [
             html.Div(
                 [
                     dbc.Label(
-                        'Batch size',
+                        'Размер батча',
                         className='mt-1',
                     ),
                     html.I(
                         className='fas fa-question-circle ml-1',
-                        id='batch-size-tip',
+                        id='batch-cube-size-tip',
                         style={
                             'margin-left': '5px',
                         },
@@ -102,14 +101,14 @@ controls = [
                     dbc.Tooltip(
                         'Объем данных (количество строк/картинок), ' +
                         'подаваемый модели между вычислениями функции потерь',
-                        target='batch-size-tip',
+                        target='batch-cube-size-tip',
                         className='pl-5',
                     ),
                 ],
                 className='text-muted',
             ),
             dbc.Input(
-                id='batch-size-value',
+                id='batch-cube_size',
                 type='number',
                 step=1,
                 value=Settings.BASE_BATCH_SIZE,
@@ -148,7 +147,67 @@ controls = [
                     'Видеокарта',
                 ],
                 value='xline',
-                id='device-type-value',
+                id='device-type',
+            ),
+        ],
+    ),
+    dbc.Form(
+        [
+            dbc.Label(
+                'Путь к сейсмическому кубу',
+                className='mt-1',
+            ),
+            dbc.Input(
+                id='segy-input',
+                style={
+                    'width': '100%',
+                },
+                value='..\\..\\data\\seistest1.npy',
+            ),
+        ],
+        id='segy-npz-path',
+    ),
+    dbc.Form(
+        [
+            dbc.Label(
+                'Путь к маскам',
+                className='mt-1',
+            ),
+            dbc.Input(
+                id='fault-mask-input',
+                style={
+                    'width': '100%',
+                },
+                value='..\\..\\data\\faulttest1.npz',
+            ),
+        ],
+        id='fault-mask-path',
+    ),
+    dbc.Form(
+        [
+            dbc.Label(
+                'Путь к координатам масок',
+                className='mt-1',
+            ),
+            dbc.Input(
+                id='fault-mask-coords-input',
+                style={
+                    'width': '100%',
+                },
+                value='..\\..\\data\\masks_31_03_2023_23_40.txt',
+            ),
+        ],
+        id='fault-mask-path',
+    ),
+    dbc.Form(
+        [
+            dbc.Button(
+                id='training-submit-button',
+                n_clicks=0,
+                children='Запуск',
+                color='secondary',
+                size='sm',
+                className='me-1 my-2',
             ),
         ],
     ),
@@ -164,25 +223,19 @@ tensorboard = html.Div(
     ),
 )
 
-layout = dbc.Container(
+layout = dbc.Card(
     [
-        dbc.Button(
-            children='Настройки',
-            id='collapse-model-settings-btn',
-        ),
+        html.Div(id='div-training-placeholder'),
         dbc.Row(
             [
-                dbc.Collapse(
-                    dbc.Card(controls, body=True),
-                    id='collapse-model-settings',
-                    is_open=True,
-                    class_name='col-md-3',
-                    dimension='width',
-                ),
-                dbc.Col(
-                    tensorboard,
-                ),
+                tensorboard,
+                dbc.Card(controls),
             ],
         ),
     ],
+    style={'width': '100%'}
 )
+
+
+def return_training():
+    return layout
