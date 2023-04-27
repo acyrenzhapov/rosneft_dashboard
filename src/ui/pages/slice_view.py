@@ -2,6 +2,9 @@ import dash_bootstrap_components as dbc
 from dash import dcc, html
 
 
+# slice_fig =
+
+
 segy_settings = dbc.CardFooter(
     [
         dbc.Label('Выбор направления', className='pt-2'),
